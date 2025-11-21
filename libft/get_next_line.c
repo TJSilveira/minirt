@@ -114,7 +114,6 @@ char	*get_next_line(int fd, int option)
 	char		*line;
 	static char	*buffer[FD_MAX];
 
-	printf ("inside gnl\n");
 	if (get_next_line_clean(fd, option, buffer))
 		return (NULL);
 	else if (fd < 0 || BUFFER_SIZE <= 0)

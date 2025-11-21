@@ -1,98 +1,99 @@
 #include "../includes/minirt.h"
 
-void print_vec3(t_vec3 *v)
+void	free_arrays(char **arrays)
 {
-    printf("%f.%f.%f\n", v->e[0], v->e[1], v->e[2]);
+	int	i;
+
+	i = 0;
+	while (arrays != NULL && arrays[i])
+	{
+		free(arrays[i]);
+		i++;
+	}
+	free(arrays);
 }
 
-t_vec3 init_vec3(double x, double y, double z)
+int	return_and_free_array(int exit_value, char **arrays)
 {
-	return ((t_vec3){{x,y,z}});
+	free_arrays(arrays);
+	return (exit_value);
 }
 
-t_vec3 unit_vec3(t_vec3 *v)
+void	ft_str_to_float(char *str, float *result)
 {
-	return (vec3_div_const_copy(*v, length(v)));
+	int		i;
+	float	div;
+	float	prec;
+	float	sign;
+
+	i = -1;
+	div = 1.0;
+	sign = 1.0;
+	prec = 0.0;
+	*result = 0.0;
+	if (str && str[0] == '-')
+		sign = -1.0;	
+	*result = (float)ft_atoi(str);
+	while (str[++i] && str[i] != '.');
+	if (str[i] == '.')
+	{
+		while (str[++i] >= '0' && str[i] <= '9')
+		{
+			div *= 10.0;
+			prec += (str[i] - '0') / div;
+		}
+		*result += sign * prec;
+	}
 }
 
-double length_squared(t_vec3 *v)
+t_bool is_digit(char c)
 {
-	return (v->e[0]*v->e[0] + v->e[1] * v->e[1] + v->e[2] * v->e[2]);
+	if ((c >= '0' && c <= '9'))
+		return (TRUE);
+	else
+		return (FALSE);
 }
 
-double length(t_vec3 *v)
+t_bool is_float(char *num)
 {
-	return (sqrt(length_squared(v)));
+	int i;
+	
+	i = -1;
+	if (num[0] == '-')
+		i = 0;
+	while (num[++i] && num[i] != '.')
+	{
+		if (is_digit(num[i]) == FALSE)
+			return (FALSE);
+	}
+	if (num[i] == '.')
+	{
+		while (num[++i])
+		{
+			if (is_digit(num[i]) == FALSE)
+				return (FALSE);
+		}
+	}
+	return (TRUE);	
 }
 
-t_vec3 vec3_mul_const_copy(t_vec3 v, double t)
+t_bool is_int_color(char *num)
 {
-	return (t_vec3){{
-		v.e[0] * t,
-		v.e[1] * t,
-		v.e[2] * t
-	}};
-}
-
-void vec3_mul_const(t_vec3 *v, double t)
-{
-	v->e[0] *= t;
-	v->e[1] *= t;
-	v->e[2] *= t;
-}
-
-t_vec3 vec3_div_const_copy(t_vec3 v, double t)
-{
-	return (t_vec3){{
-		v.e[0] / t,
-		v.e[1] / t,
-		v.e[2] / t
-	}};
-}
-
-void vec3_div_const(t_vec3 *v, double t)
-{
-	v->e[0] /= t;
-	v->e[1] /= t;
-	v->e[2] /= t;
-}
-
-t_vec3 vec3_add_2inst_copy(t_vec3 v1, t_vec3 v2)
-{
-	return (t_vec3){{
-		v1.e[0] + v2.e[0],
-		v1.e[1] + v2.e[1],
-		v1.e[2] + v2.e[2]
-	}};
-}
-
-void vec3_add_2inst(t_vec3 *v1, t_vec3 *v2)
-{
-		v1->e[0] += v2->e[0];
-		v1->e[1] += v2->e[1];
-		v1->e[2] += v2->e[2];
-}
-
-t_vec3 vec3_sub_2inst_copy(t_vec3 v1, t_vec3 v2)
-{
-	return (t_vec3){{
-		v1.e[0] - v2.e[0],
-		v1.e[1] - v2.e[1],
-		v1.e[2] - v2.e[2]
-	}};
-}
-
-void vec3_sub_2inst(t_vec3 *v1, t_vec3 *v2)
-{
-
-	v1->e[0] -= v2->e[0];
-	v1->e[1] -= v2->e[1];
-	v1->e[2] -= v2->e[2];
-}
-
-double vec3_dot(t_vec3 *v1, t_vec3 *v2)
-{
-	return (v1->e[X] * v2->e[X]
-			+ v1->e[Y] * v2->e[Y]
-			+ v1->e[Z] * v2->e[Z]);
+	int i;
+	int	result;
+	
+	i = -1;
+	result = 0;
+	if (num[0] == '-' || ft_strlen(num) == 0)
+		return (FALSE);
+	while (num[++i])
+	{
+		if (is_digit(num[i]) == FALSE)
+			return (FALSE);
+		result *= 10;
+		result += num[i] - '0';
+		if (result > MAX_INT_COLOR)
+			return (FALSE);		
+	}
+	return (TRUE);	
 }

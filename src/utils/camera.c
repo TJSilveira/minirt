@@ -27,7 +27,7 @@ void init_camera(t_engine *e)
 {
 	e->cam.focal_length = 1.0;
 	e->cam.vp_height = 2.0;
-	e->cam.vp_width = e->cam.vp_height * (double)(e->win_w)/(double)e->win_h;
+	e->cam.vp_width = e->cam.vp_height * (float)(e->win_w)/(float)e->win_h;
     e->cam.camera_center = init_vec3(0.0, 0.0, 0.0);
 	e->cam.vec_right = init_vec3(e->cam.vp_width, 0.0, 0.0);
 	e->cam.vec_down = init_vec3(0.0, -e->cam.vp_height, 0.0);
