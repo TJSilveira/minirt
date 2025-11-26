@@ -44,7 +44,7 @@ int rt_import_plane(char **params, t_scene *s)
 	i = -1;
 	pl = malloc(sizeof(t_object));
 	while (params[++i]);
-	if (i != NUM_PARAM_SPHERE)
+	if (i != NUM_PARAM_PLANE)
 		return (EXIT_FAILURE);
 	if (rt_import_vec3(params[0], &pl->plane.point) == EXIT_FAILURE ||
 		rt_import_vec3(params[1], &pl->plane.normal) == EXIT_FAILURE ||
@@ -55,6 +55,27 @@ int rt_import_plane(char **params, t_scene *s)
 	}
 	pl->id = id_plane;
 	add_object_to_scene(s, pl);
+	return(EXIT_SUCCESS);
+}
+
+int rt_import_light(char **params, t_scene *s)
+{
+	int		i;
+	t_light	*l;
+	
+	i = -1;
+	l = malloc(sizeof(t_light));
+	while (params[++i]);
+	if (i != NUM_PARAM_LIGHT)
+		return (EXIT_FAILURE);
+	if (rt_import_vec3(params[0], &l->center) == EXIT_FAILURE ||
+		rt_import_float(params[1], &l->brig) == EXIT_FAILURE ||
+		rt_import_color(params[2], &l->color) == EXIT_FAILURE)
+	{
+		free(l);
+		return (EXIT_FAILURE);
+	}
+	add_light_to_scene(s, l);
 	return(EXIT_SUCCESS);
 }
 
@@ -115,6 +136,8 @@ int rt_importer_params(char **params, t_scene *s)
 		return(rt_import_sphere(&params[1], s));
 	if (ft_strncmp(params[0], "pl", 2) == 0 && ft_strlen(params[0]) == 2)
 		return(rt_import_plane(&params[1], s));
+	if (ft_strncmp(params[0], "L", 1) == 0 && ft_strlen(params[0]) == 1)
+		return(rt_import_light(&params[1], s));
 	return (EXIT_FAILURE);
 }
 

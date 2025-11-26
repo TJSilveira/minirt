@@ -30,8 +30,6 @@ t_color3	ray_color(t_ray *r, t_engine *e)
 	t_color3 black = {{1.0,1.0,1.0}};
 	if (hit_object(e,r,&hit) == TRUE)
 	{
-		printf("This is the color:");
-		print_vec3(&hit.color);
 		return (hit.color);
 	}
 	t_vec3 unit_direction = unit_vec3(&r->dir);

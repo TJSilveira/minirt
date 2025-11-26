@@ -32,6 +32,8 @@
 # define PI 3.14159265
 
 # define NUM_PARAM_SPHERE 3
+# define NUM_PARAM_PLANE 3
+# define NUM_PARAM_LIGHT 3
 
 
 #include <stdio.h>
@@ -145,8 +147,10 @@ typedef struct s_scene
 {
 	t_object	**objects;
 	t_light		**lights;
-	size_t		count;
-	size_t		capacity;
+	size_t		obj_count;
+	size_t		obj_capacity;
+	size_t		l_count;
+	size_t		l_capacity;
 } t_scene;
 
 typedef struct s_engine
@@ -245,6 +249,7 @@ float	ft_fabs(float num);
 // scene.c
 void create_scene(char *argv[], t_engine *e);
 void add_object_to_scene(t_scene *s, t_object *o);
+void add_light_to_scene(t_scene *s, t_light *light);
 
 // import.c
 char **rt_file_parser(char* buffer);
