@@ -54,7 +54,7 @@ int rt_import_plane(char **params, t_scene *s)
 		return (EXIT_FAILURE);		
 	}
 	pl->id = id_plane;
-	unit_vec3(&pl->plane.normal);
+	pl->plane.normal = unit_vec3(&pl->plane.normal);
 	add_object_to_scene(s, pl);
 	return(EXIT_SUCCESS);
 }

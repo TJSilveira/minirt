@@ -10,9 +10,20 @@ t_point3 point_at_ray(t_ray *r, float t)
 	return (result);
 }
 
+float	linear_to_gamma(float num)
+{
+	if (num > 0)
+		return (sqrt(num));
+	return (0);
+}
+
 unsigned int t_color3_to_uint(t_color3 c)
 {
 	unsigned int color_final;
+
+	c.e[X] = linear_to_gamma(c.e[X]);
+	c.e[Y] = linear_to_gamma(c.e[Y]);
+	c.e[Z] = linear_to_gamma(c.e[Z]);
 
 	color_final = 0;
     color_final |= (unsigned int)(c.e[B] * 255);
@@ -24,20 +35,15 @@ unsigned int t_color3_to_uint(t_color3 c)
 t_color3	ray_tracer(t_ray *r, t_engine *e)
 {
 	t_hit	hit;
+	t_color3 black; 
 
 	hit = (t_hit){0};
-
+	black = (t_color3){{1.0,1.0,1.0}};
 	if (hit_object(e,r,&hit) == TRUE)
 	{
 		return (ray_color(r, e, &hit));
 	}
-	t_color3 blue = {{0.5,0.7,1.0}};
-	t_color3 black = {{1.0,1.0,1.0}};
-	t_vec3 unit_direction = unit_vec3(&r->dir);
-	float a = 0.5 * (unit_direction.e[1] + 1.0);
-	black = vec3_mul_const_copy(black, 1.0 - a); 
-	blue = vec3_mul_const_copy(blue, a); 
-	return (vec3_add_2inst_copy(black, blue));
+	return (black);
 }
 
 t_color3	ray_color(t_ray *r, t_engine *e, t_hit *hit)
@@ -53,12 +59,20 @@ t_color3	ray_color(t_ray *r, t_engine *e, t_hit *hit)
 	{
 		if (in_shadow(e, e->scene.lights[i], hit) == FALSE)
 		{
+			// printf("Ambient\n");
+			// print_vec3(&phong_color);
 			diffuse_color = ray_color_diffuse_light(e->scene.lights[i], hit);
+			// printf("Diffuse\n");
+			// print_vec3(&diffuse_color);
 			vec3_add_2inst(&phong_color, &diffuse_color);
 			specular_color = ray_color_specular_light(e->scene.lights[i], hit, r);
+			// specular_color = (t_color3){{0}};
+			// printf("Specular\n");
+			// print_vec3(&specular_color);
 			vec3_add_2inst(&phong_color, &specular_color);
 		}
 	}
+	vec3_max_normalization(&phong_color);
 	return (phong_color);
 }
 
@@ -67,11 +81,7 @@ t_color3	ray_color_ambient_light(t_engine *e, t_hit *hit)
 	t_color3	ambient_color;
 
 	ambient_color = vec3_mul_const_copy(e->scene.amb.color, e->scene.amb.intensity);
-	unit_vec3(&ambient_color);
-	vec3_mul_2inst_copy(ambient_color, hit->color);
-	// printf("Ambient color\n");
-	// print_vec3(&hit->color);
-	// print_vec3(&ambient_color);
+	vec3_mul_2inst(&ambient_color, &hit->color);
 	return (ambient_color);
 }
 
@@ -82,7 +92,7 @@ t_color3	ray_color_diffuse_light(t_light *l, t_hit *hit)
 	float		intensity;
 
 	light_ray.dir = vec3_sub_2inst_copy(l->center, hit->p);
-	unit_vec3(&light_ray.dir);
+	light_ray.dir = unit_vec3(&light_ray.dir);
 	intensity = vec3_dot(&light_ray.dir, &hit->normal);
 	if (intensity < 0)
 		return ((t_color3){{0,0,0}});
@@ -107,9 +117,12 @@ t_color3	ray_color_specular_light(t_light *l, t_hit *hit, t_ray *r)
 	n_dot_l = vec3_dot(&hit->normal, &light_ray.dir);
 	vec3_mul_const(&reflected_ray.dir, 2.0 * n_dot_l);
 	vec3_sub_2inst(&reflected_ray.dir, &light_ray.dir);
+	reflected_ray.dir = unit_vec3(&reflected_ray.dir);
+	vec3_mul_const(&reflected_ray.dir, -1.0);
 	intensity = vec3_dot(&reflected_ray.dir, &r->dir);
 	if (intensity < 0)
 		return ((t_color3){{0,0,0}});
+	intensity = pow(fmax(0.0, intensity), SPECULAR_PARAM);
 	intensity *= l->brightness;
 	specular_color = vec3_mul_const_copy(l->color, intensity);
 	vec3_mul_2inst(&specular_color, &hit->color);
@@ -201,14 +214,16 @@ t_bool hit_object(t_engine *e, t_ray *r, t_hit *hit)
 	return (hit_anything);
 }
 
-t_bool hit_occluded(t_engine *e, t_ray *r, t_hit *hit)
+t_bool hit_occluded(t_engine *e, t_ray *r)
 {
+	t_hit	shadow_hit;
 	int		i;
 
+	shadow_hit = (t_hit){0};
 	i = -1;
 	while (e->scene.objects[++i])
 	{
-		if (hit_object_function_selecter(e->scene.objects[i], r, hit) == TRUE)
+		if (hit_object_function_selecter(e->scene.objects[i], r, &shadow_hit) == TRUE)
 			return (TRUE);
 	}
 	return (FALSE);
@@ -222,4 +237,16 @@ t_bool hit_object_function_selecter(t_object *obj, t_ray *r, t_hit *hit)
 	else if (obj->id == id_plane)
 		return (hit_plane(&obj->plane, r, hit));
 	return (FALSE);
+}
+
+void	vec3_max_normalization(t_vec3 *v)
+{
+	float max_component;
+
+	max_component = v->e[X];
+	if (v->e[Y] > max_component)
+		max_component = v->e[Y];
+	if (v->e[Z] > max_component)
+		max_component = v->e[Z];
+	vec3_div_const(v, (1 + max_component));
 }

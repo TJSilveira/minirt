@@ -8,5 +8,5 @@ t_bool in_shadow(t_engine *e, t_light *l, t_hit *hit)
 	shadow_ray.orig = hit->p;
 	shadow_ray.itv.min = EPSILON;
 	shadow_ray.itv.max = TMAX;
-	return (hit_occluded(e, &shadow_ray, hit));
+	return (hit_occluded(e, &shadow_ray));
 }

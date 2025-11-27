@@ -27,7 +27,7 @@
 # define TMAX 5000
 # define RAY_SAMPLE_SIDE_SIZE 2.0
 # define RAY_SAMPLE_PADDING 0.2
-# define EPSILON 0.00001
+# define EPSILON 0.000001
 
 # define PI 3.14159265
 
@@ -35,6 +35,8 @@
 # define NUM_PARAM_PLANE 3
 # define NUM_PARAM_LIGHT 3
 # define NUM_PARAM_AMBIENT 2
+
+# define SPECULAR_PARAM 16.0
 
 
 #include <stdio.h>
@@ -238,7 +240,7 @@ t_color3	ray_tracer(t_ray *r, t_engine *e);
 t_point3 point_at_ray(t_ray *r, float t);
 t_bool	hit_sphere(t_sphere *s, t_ray *r, t_hit *rec);
 t_bool hit_object(t_engine *e, t_ray *r, t_hit *hit);
-t_bool hit_occluded(t_engine *e, t_ray *r, t_hit *hit);
+t_bool hit_occluded(t_engine *e, t_ray *r);
 unsigned int t_color3_to_uint(t_color3 c);
 void	record_hit (t_ray *r, t_hit *rec, t_vec3 *normal, float t);
 t_bool hit_object_function_selecter(t_object *obj, t_ray *r, t_hit *hit);
@@ -247,6 +249,7 @@ t_color3	ray_color(t_ray *r, t_engine *e, t_hit *hit);
 t_color3	ray_color_ambient_light(t_engine *e, t_hit *hit);
 t_color3	ray_color_diffuse_light(t_light *l, t_hit *hit);
 t_color3	ray_color_specular_light(t_light *l, t_hit *hit, t_ray *r);
+void		vec3_max_normalization(t_vec3 *v);
 
 
 // mlx_utils.c
