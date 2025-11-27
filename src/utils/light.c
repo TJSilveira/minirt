@@ -1,6 +1,6 @@
 #include "../includes/minirt.h"
 
-t_bool is_in_shadow(t_light *l, t_hit *hit, t_engine *e)
+t_bool in_shadow(t_engine *e, t_light *l, t_hit *hit)
 {
 	t_ray	shadow_ray;
 
@@ -8,5 +8,5 @@ t_bool is_in_shadow(t_light *l, t_hit *hit, t_engine *e)
 	shadow_ray.orig = hit->p;
 	shadow_ray.itv.min = EPSILON;
 	shadow_ray.itv.max = TMAX;
-	return (hit_object(e, &shadow_ray, hit));
+	return (hit_occluded(e, &shadow_ray, hit));
 }

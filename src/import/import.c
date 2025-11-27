@@ -54,6 +54,7 @@ int rt_import_plane(char **params, t_scene *s)
 		return (EXIT_FAILURE);		
 	}
 	pl->id = id_plane;
+	unit_vec3(&pl->plane.normal);
 	add_object_to_scene(s, pl);
 	return(EXIT_SUCCESS);
 }
@@ -69,13 +70,30 @@ int rt_import_light(char **params, t_scene *s)
 	if (i != NUM_PARAM_LIGHT)
 		return (EXIT_FAILURE);
 	if (rt_import_vec3(params[0], &l->center) == EXIT_FAILURE ||
-		rt_import_float(params[1], &l->brig) == EXIT_FAILURE ||
+		rt_import_float(params[1], &l->brightness) == EXIT_FAILURE ||
 		rt_import_color(params[2], &l->color) == EXIT_FAILURE)
 	{
 		free(l);
 		return (EXIT_FAILURE);
 	}
 	add_light_to_scene(s, l);
+	return(EXIT_SUCCESS);
+}
+
+int rt_import_ambient(char **params, t_scene *s)
+{
+	int		i;
+	
+	if (s->amb.has_ambient == 1)
+		return (EXIT_FAILURE);
+	i = -1;
+	while (params[++i]);
+	if (i != NUM_PARAM_AMBIENT)
+		return (EXIT_FAILURE);
+	if (rt_import_float(params[0], &s->amb.intensity) == EXIT_FAILURE ||
+		rt_import_color(params[1], &s->amb.color) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
+	s->amb.has_ambient = 1;
 	return(EXIT_SUCCESS);
 }
 
@@ -138,6 +156,8 @@ int rt_importer_params(char **params, t_scene *s)
 		return(rt_import_plane(&params[1], s));
 	if (ft_strncmp(params[0], "L", 1) == 0 && ft_strlen(params[0]) == 1)
 		return(rt_import_light(&params[1], s));
+	if (ft_strncmp(params[0], "A", 1) == 0 && ft_strlen(params[0]) == 1)
+		return(rt_import_ambient(&params[1], s));
 	return (EXIT_FAILURE);
 }
 

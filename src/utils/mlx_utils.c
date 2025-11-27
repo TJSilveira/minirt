@@ -47,7 +47,7 @@ void	get_pixel_color_anti_alaising_rt(t_engine *e, t_pixel *p)
 		{
 			curr_sample = get_sample_location(e, p, i, j);
 			init_ray(&r, e, &curr_sample);
-            p->clr = vec3_add_2inst_copy(p->clr, vec3_div_const_copy(ray_color(&r, e), RAY_SAMPLE_SIDE_SIZE * RAY_SAMPLE_SIDE_SIZE));
+            p->clr = vec3_add_2inst_copy(p->clr, vec3_div_const_copy(ray_tracer(&r, e), RAY_SAMPLE_SIDE_SIZE * RAY_SAMPLE_SIDE_SIZE));
 			j++;
 		}
 		i++;
@@ -106,7 +106,88 @@ void	init_engine(char *argv[], t_engine *e)
 	init_img(e);
 	init_camera(e);
 	create_scene(argv, e);
-	for (size_t i = 0; e->scene.objects[i]; i++)
-		printf("Object %li\n", i);	
+	print_scene(e);
 	render(e);
+}
+
+void	print_scene(t_engine *e)
+{
+	print_scene_ambient(e);
+	print_scene_lights(e);
+	print_scene_objects(e);
+}
+
+void	print_scene_ambient(t_engine *e)
+{
+	if (e->scene.amb.has_ambient)
+	{
+		printf("[Ambient Color]\n");
+		printf("Ambient Color:");
+		print_vec3(&e->scene.amb.color);
+		printf("Ambient Intensity: %f\n",e->scene.amb.intensity);
+	}
+	else
+		printf("No Ambient light loaded\n");
+}
+
+void	print_scene_lights(t_engine *e)
+{
+	int	i;
+
+	i = -1;
+	if (e->scene.l_count == 0)
+		printf("No Lights loaded\n");
+	else
+		printf("[%li Lights loaded]\n", e->scene.l_count);
+	while (e->scene.lights[++i])
+	{
+		printf("[%i] Brightness: %f\n", i, e->scene.lights[i]->brightness);
+		printf("[%i] Color:\n", i);
+		print_vec3(&e->scene.lights[i]->color);
+		printf("[%i] Center:\n", i);
+		print_vec3(&e->scene.lights[i]->center);
+		printf("\n");
+	}
+}
+
+void	print_scene_objects(t_engine *e)
+{
+	int	i;
+
+	i = -1;
+	printf("[Objects]\n");
+	while (e->scene.objects[++i])
+	{
+		print_scene_sphere(e->scene.objects[i]);
+		print_scene_plane(e->scene.objects[i]);
+	}
+}
+
+void	print_scene_sphere(t_object *obj)
+{
+	if (obj->id == id_sphere)
+	{
+		printf("[SPHERE]\n");
+		printf("Color:\n");
+		print_vec3(&obj->sphere.color);
+		printf("Center:\n");
+		print_vec3(&obj->sphere.center);
+		printf("Ray: %f\n", obj->sphere.ray);
+		printf("\n");
+	}
+}
+
+void	print_scene_plane(t_object *obj)
+{
+	if (obj->id == id_plane)
+	{
+		printf("[PLANE]\n");
+		printf("Color:\n");
+		print_vec3(&obj->plane.color);
+		printf("Normal:\n");
+		print_vec3(&obj->plane.normal);
+		printf("Point:\n");
+		print_vec3(&obj->plane.point);
+		printf("\n");
+	}
 }

@@ -13,7 +13,7 @@ void add_light_to_scene(t_scene *s, t_light *light)
 	if (s->l_count > s->l_capacity)
 		exit(1); // TODO: Add error handling function
 	s->lights[s->l_count] = light;
-	s->l_capacity += 1;
+	s->l_count += 1;
 }
 
 void create_scene(char *argv[], t_engine *e)
@@ -28,6 +28,9 @@ void create_scene(char *argv[], t_engine *e)
 	e->scene.obj_count = 0;
 	e->scene.l_capacity = MAX_OBJECTS;
 	e->scene.l_count = 0;
+	e->scene.amb.has_ambient = 0;
+	e->scene.amb.color = (t_color3){{0}};
+	e->scene.amb.intensity = 0;
 
 	fd = open(argv[1], O_RDONLY);
 	buffer = get_next_line(fd, TO_USE);

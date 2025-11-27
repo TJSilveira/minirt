@@ -34,6 +34,7 @@
 # define NUM_PARAM_SPHERE 3
 # define NUM_PARAM_PLANE 3
 # define NUM_PARAM_LIGHT 3
+# define NUM_PARAM_AMBIENT 2
 
 
 #include <stdio.h>
@@ -97,9 +98,7 @@ typedef struct s_cylinder
 typedef struct s_light
 {
 	t_point3	center;
-	float		brig;
-	float		diam;
-	float		h;
+	float		brightness;
 	t_color3	color;
 } t_light;
 
@@ -143,6 +142,13 @@ typedef union u_object
 	t_cylinder	cylinder;
 } t_object;
 
+typedef	struct s_ambient
+{
+	int			has_ambient;
+	float		intensity;
+	t_color3	color;
+}t_ambient;
+
 typedef struct s_scene
 {
 	t_object	**objects;
@@ -151,6 +157,7 @@ typedef struct s_scene
 	size_t		obj_capacity;
 	size_t		l_count;
 	size_t		l_capacity;
+	t_ambient	amb;
 } t_scene;
 
 typedef struct s_engine
@@ -198,6 +205,8 @@ float		length(t_vec3 *v);
 
 t_vec3		vec3_mul_const_copy(t_vec3 v, float t);
 void		vec3_mul_const(t_vec3 *v, float t);
+t_vec3		vec3_mul_2inst_copy(t_vec3 v1, t_vec3 v2);
+void		vec3_mul_2inst(t_vec3 *v1, t_vec3 *v2);
 
 t_vec3		vec3_div_const_copy(t_vec3 v, float t);
 void		vec3_div_const(t_vec3 *v, float t);
@@ -225,13 +234,20 @@ t_point3 calculate_pixel_center(t_camera *c, int row, int col);
 t_point3 calculate_pixel_top_left(t_camera *c, int row, int col);
 
 // ray.c
-t_color3	ray_color(t_ray *r, t_engine *e);
+t_color3	ray_tracer(t_ray *r, t_engine *e);
 t_point3 point_at_ray(t_ray *r, float t);
 t_bool	hit_sphere(t_sphere *s, t_ray *r, t_hit *rec);
 t_bool hit_object(t_engine *e, t_ray *r, t_hit *hit);
+t_bool hit_occluded(t_engine *e, t_ray *r, t_hit *hit);
 unsigned int t_color3_to_uint(t_color3 c);
 void	record_hit (t_ray *r, t_hit *rec, t_vec3 *normal, float t);
 t_bool hit_object_function_selecter(t_object *obj, t_ray *r, t_hit *hit);
+
+t_color3	ray_color(t_ray *r, t_engine *e, t_hit *hit);
+t_color3	ray_color_ambient_light(t_engine *e, t_hit *hit);
+t_color3	ray_color_diffuse_light(t_light *l, t_hit *hit);
+t_color3	ray_color_specular_light(t_light *l, t_hit *hit, t_ray *r);
+
 
 // mlx_utils.c
 void	my_mlx_pixel_put(t_image *data, int x, int y, int color);
@@ -240,7 +256,13 @@ void	init_img(t_engine *e);
 void	init_engine(char *argv[], t_engine *e);
 void	get_pixel_color_anti_alaising_rt(t_engine *e, t_pixel *p);
 t_point3	get_sample_location(t_engine *e, t_pixel *p, int i, int j);
-void init_ray(t_ray *ray, t_engine *e, t_point3 *dir_point);
+void 	init_ray(t_ray *ray, t_engine *e, t_point3 *dir_point);
+void	print_scene(t_engine *e);
+void	print_scene_ambient(t_engine *e);
+void	print_scene_lights(t_engine *e);
+void	print_scene_objects(t_engine *e);
+void	print_scene_sphere(t_object *obj);
+void	print_scene_plane(t_object *obj);
 
 // math_utils.c
 void	solve_quadratic(t_quadratic *q);
@@ -268,5 +290,8 @@ void	ft_str_to_float(char *str, float *result);
 t_bool is_digit(char c);
 t_bool is_float(char *num);
 t_bool is_int_color(char *num);
+
+// light.c
+t_bool in_shadow(t_engine *e, t_light *l, t_hit *hit);
 
 #endif
