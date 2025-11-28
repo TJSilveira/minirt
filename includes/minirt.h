@@ -35,6 +35,7 @@
 # define NUM_PARAM_PLANE 3
 # define NUM_PARAM_LIGHT 3
 # define NUM_PARAM_AMBIENT 2
+# define NUM_PARAM_CAMERA 3
 
 # define SPECULAR_PARAM 16.0
 
@@ -116,15 +117,17 @@ typedef struct s_image
 
 typedef struct s_camera
 {
-	float	focal_length;
-    float	vp_height;
-    float	vp_width;
-	t_vec3	vec_right;
-    t_vec3	vec_down;
-    t_vec3	vec_focal;
-	t_vec3	pixel_delta_right;
-	t_vec3	pixel_delta_down;
+	float		focal_length;
+    float		vp_height;
+    float		vp_width;
+	float		fov;
+	t_vec3		vec_right;
+    t_vec3		vec_down;
+    t_vec3		vec_focal;
+	t_vec3		pixel_delta_right;
+	t_vec3		pixel_delta_down;
 	t_point3	camera_center;
+	t_vec3		direction;
 	t_point3	vp_upper_left;
 	t_point3	pixel00_loc_center;
 }t_camera;
@@ -159,7 +162,7 @@ typedef struct s_scene
 	size_t		obj_capacity;
 	size_t		l_count;
 	size_t		l_capacity;
-	t_ambient	amb;
+	t_ambient	*amb;
 } t_scene;
 
 typedef struct s_engine
@@ -170,7 +173,7 @@ typedef struct s_engine
 	unsigned int	win_h;
 	float			aspect_ratio;
 	t_image			img;
-	t_camera		cam;
+	t_camera		*cam;
 	t_scene			scene;
 }	t_engine;
 
@@ -277,14 +280,15 @@ void add_object_to_scene(t_scene *s, t_object *o);
 void add_light_to_scene(t_scene *s, t_light *light);
 
 // import.c
-char **rt_file_parser(char* buffer);
-int rt_import_sphere(char **params, t_scene *s);
-int rt_import_color(char *param, t_vec3 *vec);
-int	rt_import_float(char *param, float *result);
-int rt_import_vec3 (char *param, t_vec3 *vec);
-int rt_importer_params(char **params, t_scene *s);
-void rt_extension_check(char *argv[]);
-
+char	**rt_file_parser(char* buffer);
+int		rt_import_sphere(char **params, t_scene *s);
+int		rt_import_color(char *param, t_vec3 *vec);
+int		rt_import_float(char *param, float *result);
+int		rt_import_vec3 (char *param, t_vec3 *vec);
+int		rt_importer_params(char **params, t_engine *e);
+void	rt_extension_check(char *argv[]);
+int		rt_import_fov(char *param, float *result);
+int		rt_import_vec3_normalized (char *param, t_vec3 *vec);
 
 // utils.c
 void	free_arrays(char **arrays);

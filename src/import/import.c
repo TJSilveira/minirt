@@ -84,16 +84,34 @@ int rt_import_ambient(char **params, t_scene *s)
 {
 	int		i;
 	
-	if (s->amb.has_ambient == 1)
+	if (s->amb)
 		return (EXIT_FAILURE);
+	s->amb = malloc(sizeof(t_ambient));
 	i = -1;
 	while (params[++i]);
 	if (i != NUM_PARAM_AMBIENT)
 		return (EXIT_FAILURE);
-	if (rt_import_float(params[0], &s->amb.intensity) == EXIT_FAILURE ||
-		rt_import_color(params[1], &s->amb.color) == EXIT_FAILURE)
+	if (rt_import_float(params[0], &s->amb->intensity) == EXIT_FAILURE ||
+		rt_import_color(params[1], &s->amb->color) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
-	s->amb.has_ambient = 1;
+	return(EXIT_SUCCESS);
+}
+
+int rt_import_camera(char **params, t_engine *e)
+{
+	int		i;
+	
+	if (e->cam)
+		return (EXIT_FAILURE);
+	e->cam = malloc(sizeof(t_camera));
+	i = -1;
+	while (params[++i]);
+	if (i != NUM_PARAM_CAMERA)
+		return (EXIT_FAILURE);
+	if (rt_import_vec3(params[0], &e->cam->camera_center) == EXIT_FAILURE ||
+		rt_import_vec3_normalized(params[1], &e->cam->direction) == EXIT_FAILURE ||
+		rt_import_fov(params[2], &e->cam->fov))
+		return (EXIT_FAILURE);
 	return(EXIT_SUCCESS);
 }
 
@@ -128,6 +146,16 @@ int	rt_import_float(char *param, float *result)
 	return (EXIT_SUCCESS);
 }
 
+int	rt_import_fov(char *param, float *result)
+{
+	if (is_float(param) == FALSE)
+		return (EXIT_FAILURE);
+	ft_str_to_float(param, result);
+	if (*result <= 0.0 || *result >= 180.0)
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
+}
+
 int rt_import_vec3 (char *param, t_vec3 *vec)
 {
 	char	**nums;
@@ -148,16 +176,40 @@ int rt_import_vec3 (char *param, t_vec3 *vec)
 	return(return_and_free_array(EXIT_SUCCESS, nums));
 }
 
-int rt_importer_params(char **params, t_scene *s)
+int rt_import_vec3_normalized (char *param, t_vec3 *vec)
+{
+	char	**nums;
+	int		i;
+
+	nums = ft_split(param, ',');
+	if (!(nums && nums[0] && nums[1] && nums [2] && !nums[3]))
+		return(return_and_free_array(EXIT_FAILURE, nums));
+	i = -1;
+	while (++i < 3)
+	{
+		if(is_float(nums[i]) == FALSE)
+			return(return_and_free_array(EXIT_FAILURE, nums));
+	}	
+	i = -1;
+	while (nums[++i])
+		ft_str_to_float(nums[i], &vec->e[i]);
+	if (length(vec) - 1 < EPSILON)
+		return(return_and_free_array(EXIT_SUCCESS, nums));
+	return(return_and_free_array(EXIT_FAILURE, nums));	
+}
+
+int rt_importer_params(char **params, t_engine *e)
 {
 	if (ft_strncmp(params[0], "sp", 2) == 0 && ft_strlen(params[0]) == 2)
-		return(rt_import_sphere(&params[1], s));
+		return(rt_import_sphere(&params[1], &e->scene));
 	if (ft_strncmp(params[0], "pl", 2) == 0 && ft_strlen(params[0]) == 2)
-		return(rt_import_plane(&params[1], s));
+		return(rt_import_plane(&params[1], &e->scene));
 	if (ft_strncmp(params[0], "L", 1) == 0 && ft_strlen(params[0]) == 1)
-		return(rt_import_light(&params[1], s));
+		return(rt_import_light(&params[1], &e->scene));
 	if (ft_strncmp(params[0], "A", 1) == 0 && ft_strlen(params[0]) == 1)
-		return(rt_import_ambient(&params[1], s));
+		return(rt_import_ambient(&params[1], &e->scene));
+	if (ft_strncmp(params[0], "C", 1) == 0 && ft_strlen(params[0]) == 1)
+		return(rt_import_camera(&params[1], e));
 	return (EXIT_FAILURE);
 }
 

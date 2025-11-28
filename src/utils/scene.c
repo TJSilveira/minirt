@@ -28,16 +28,14 @@ void create_scene(char *argv[], t_engine *e)
 	e->scene.obj_count = 0;
 	e->scene.l_capacity = MAX_OBJECTS;
 	e->scene.l_count = 0;
-	e->scene.amb.has_ambient = 0;
-	e->scene.amb.color = (t_color3){{0}};
-	e->scene.amb.intensity = 0;
+	e->scene.amb = NULL;
 
 	fd = open(argv[1], O_RDONLY);
 	buffer = get_next_line(fd, TO_USE);
 	while (buffer)
 	{
 		params = rt_file_parser(buffer);
-		rt_importer_params(params,&e->scene);
+		rt_importer_params(params, e);
 		free(buffer);
 		buffer = NULL;
 		buffer = get_next_line(fd, TO_USE);

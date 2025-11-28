@@ -80,7 +80,7 @@ t_color3	ray_color_ambient_light(t_engine *e, t_hit *hit)
 {
 	t_color3	ambient_color;
 
-	ambient_color = vec3_mul_const_copy(e->scene.amb.color, e->scene.amb.intensity);
+	ambient_color = vec3_mul_const_copy(e->scene.amb->color, e->scene.amb->intensity);
 	vec3_mul_2inst(&ambient_color, &hit->color);
 	return (ambient_color);
 }

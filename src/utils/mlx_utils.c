@@ -38,7 +38,7 @@ void	get_pixel_color_anti_alaising_rt(t_engine *e, t_pixel *p)
 	int			i;
 	int			j;
 
-	p->top_left = calculate_pixel_top_left(&e->cam, p->x, p->y);
+	p->top_left = calculate_pixel_top_left(e->cam, p->x, p->y);
 	i = 0;
 	while (i < RAY_SAMPLE_SIDE_SIZE)
 	{
@@ -61,8 +61,8 @@ t_point3	get_sample_location(t_engine *e, t_pixel *p, int i, int j)
 	float		x;
 	float		y;
 
-	x = (RAY_SAMPLE_PADDING + i * (1.0 - 2.0 * RAY_SAMPLE_PADDING) / (RAY_SAMPLE_SIDE_SIZE - 1.0)) * vec3_get_x(&e->cam.pixel_delta_right);
-	y = (RAY_SAMPLE_PADDING + j * (1.0 - 2.0 * RAY_SAMPLE_PADDING) / (RAY_SAMPLE_SIDE_SIZE - 1.0)) * vec3_get_y(&e->cam.pixel_delta_down);
+	x = (RAY_SAMPLE_PADDING + i * (1.0 - 2.0 * RAY_SAMPLE_PADDING) / (RAY_SAMPLE_SIDE_SIZE - 1.0)) * vec3_get_x(&e->cam->pixel_delta_right);
+	y = (RAY_SAMPLE_PADDING + j * (1.0 - 2.0 * RAY_SAMPLE_PADDING) / (RAY_SAMPLE_SIDE_SIZE - 1.0)) * vec3_get_y(&e->cam->pixel_delta_down);
 	pixel_sample_delta = init_vec3(x, y, 0.0);
 	curr_sample = vec3_add_2inst_copy(p->top_left, pixel_sample_delta);
 	return (curr_sample);
@@ -72,9 +72,9 @@ void init_ray(t_ray *ray, t_engine *e, t_point3 *dir_point)
 {
 	t_vec3		ray_direction;
 
-	ray_direction = vec3_sub_2inst_copy(*dir_point, e->cam.camera_center);
+	ray_direction = vec3_sub_2inst_copy(*dir_point, e->cam->camera_center);
 	ray->dir = ray_direction;
-	ray->orig = e->cam.camera_center;
+	ray->orig = e->cam->camera_center;
 	ray->itv.min = 0.0;
 	ray->itv.max = TMAX;
 }
@@ -104,8 +104,8 @@ void	init_engine(char *argv[], t_engine *e)
 	e->win_h = (int)(e->win_w/aspect_ratio);
 	e->window = mlx_new_window(e->mlx, e->win_w, e->win_h, header);
 	init_img(e);
-	init_camera(e);
 	create_scene(argv, e);
+	init_camera(e);
 	print_scene(e);
 	render(e);
 }
@@ -119,12 +119,12 @@ void	print_scene(t_engine *e)
 
 void	print_scene_ambient(t_engine *e)
 {
-	if (e->scene.amb.has_ambient)
+	if (e->scene.amb->has_ambient)
 	{
 		printf("[Ambient Color]\n");
 		printf("Ambient Color:");
-		print_vec3(&e->scene.amb.color);
-		printf("Ambient Intensity: %f\n",e->scene.amb.intensity);
+		print_vec3(&e->scene.amb->color);
+		printf("Ambient Intensity: %f\n",e->scene.amb->intensity);
 	}
 	else
 		printf("No Ambient light loaded\n");
