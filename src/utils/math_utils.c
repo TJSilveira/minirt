@@ -14,9 +14,7 @@ void	solve_quadratic(t_quadratic *q)
 	}
 }
 
-float	ft_fabs(float num)
+float	degrees_to_radians(float degrees)
 {
-	if (num < 0.0)
-		return (-num);
-	return (num);
+	return (degrees * PI / 180.0);
 }

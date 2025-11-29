@@ -25,10 +25,14 @@ void init_pixel00_center(t_camera *c)
 
 void init_camera(t_engine *e)
 {
+	float	theta;
+	float	h;
+
+	theta = degrees_to_radians(e->cam->fov);
+	h = tan(theta / 2);
 	e->cam->focal_length = 1.0;
-	e->cam->vp_height = 2.0;
+	e->cam->vp_height = 2 * h * e->cam->focal_length;
 	e->cam->vp_width = e->cam->vp_height * (float)(e->win_w)/(float)e->win_h;
-    e->cam->camera_center = init_vec3(0.0, 0.0, 0.0);
 	e->cam->vec_right = init_vec3(e->cam->vp_width, 0.0, 0.0);
 	e->cam->vec_down = init_vec3(0.0, -e->cam->vp_height, 0.0);
 	e->cam->vec_focal = init_vec3(0.0, 0.0, e->cam->focal_length);

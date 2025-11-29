@@ -272,7 +272,7 @@ void	print_scene_plane(t_object *obj);
 
 // math_utils.c
 void	solve_quadratic(t_quadratic *q);
-float	ft_fabs(float num);
+float	degrees_to_radians(float degrees);
 
 // scene.c
 void create_scene(char *argv[], t_engine *e);

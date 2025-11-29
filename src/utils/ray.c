@@ -177,7 +177,7 @@ t_bool	hit_plane (t_plane *p, t_ray *r, t_hit *hit)
 	t_vec3	p0_minus_l0;
 
 	denominator = vec3_dot(&p->normal, &r->dir);
-	if (ft_fabs(denominator) < EPSILON)
+	if (fabs(denominator) < EPSILON)
 		return (FALSE);
 	p0_minus_l0 = vec3_sub_2inst_copy(p->point, r->orig);
 	t = vec3_dot(&p0_minus_l0, &p->normal) / denominator;
