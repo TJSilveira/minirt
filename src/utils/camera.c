@@ -27,15 +27,29 @@ void init_camera(t_engine *e)
 {
 	float	theta;
 	float	h;
+	t_vec3	up;
+
 
 	theta = degrees_to_radians(e->cam->fov);
 	h = tan(theta / 2);
 	e->cam->focal_length = 1.0;
 	e->cam->vp_height = 2 * h * e->cam->focal_length;
 	e->cam->vp_width = e->cam->vp_height * (float)(e->win_w)/(float)e->win_h;
-	e->cam->vec_right = init_vec3(e->cam->vp_width, 0.0, 0.0);
-	e->cam->vec_down = init_vec3(0.0, -e->cam->vp_height, 0.0);
-	e->cam->vec_focal = init_vec3(0.0, 0.0, e->cam->focal_length);
+
+	if (fabs(e->cam->direction.e[Y]) < 0.9)
+		up = init_vec3(0, 1, 0);
+	else
+		up = init_vec3(0, 0, 1);
+
+	e->cam->vec_right = vec3_cross(&e->cam->direction, &up);
+	e->cam->vec_right = unit_vec3(&e->cam->vec_right);
+
+	up = vec3_cross(&e->cam->vec_right, &e->cam->direction);
+	up = unit_vec3(&up);
+
+	e->cam->vec_right = vec3_mul_const_copy(e->cam->vec_right, -e->cam->vp_width);
+	e->cam->vec_down = vec3_mul_const_copy(up, e->cam->vp_height);
+	e->cam->vec_focal = vec3_mul_const_copy(e->cam->direction, e->cam->focal_length);
 	e->cam->pixel_delta_right = vec3_div_const_copy(e->cam->vec_right, e->win_w);
 	e->cam->pixel_delta_down = vec3_div_const_copy(e->cam->vec_down, e->win_h);
 	init_camera_upper_left(e->cam);

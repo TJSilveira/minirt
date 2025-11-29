@@ -128,6 +128,16 @@ float	vec3_dot(t_vec3 *v1, t_vec3 *v2)
 			+ v1->e[Z] * v2->e[Z]);
 }
 
+t_vec3	vec3_cross(t_vec3 *v1, t_vec3 *v2)
+{
+	return (init_vec3(
+		v1->e[1] * v2->e[2] - v1->e[2] * v2->e[1],
+		v1->e[0] * v2->e[2] - v1->e[2] * v2->e[0],
+		v1->e[0] * v2->e[1] - v1->e[1] * v2->e[0]
+		)
+	);
+}
+
 float	vec3_get_x(t_vec3 *v)
 {
 	return (v->e[X]);

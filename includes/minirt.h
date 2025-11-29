@@ -269,6 +269,8 @@ void	print_scene_lights(t_engine *e);
 void	print_scene_objects(t_engine *e);
 void	print_scene_sphere(t_object *obj);
 void	print_scene_plane(t_object *obj);
+t_vec3	vec3_cross(t_vec3 *v1, t_vec3 *v2);
+
 
 // math_utils.c
 void	solve_quadratic(t_quadratic *q);
