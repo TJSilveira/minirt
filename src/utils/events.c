@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   events.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tsilveir <tsilveir@student.42luxembourg.l  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/02 14:52:02 by tsilveir          #+#    #+#             */
+/*   Updated: 2025/12/02 14:52:05 by tsilveir         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minirt.h"
 
 int	close_win(t_engine *engine)
@@ -38,7 +50,7 @@ void	move_translation(t_engine *e, float x_move, float y_move, float z_move)
 	t_vec3	x_vec3;
 	t_vec3	y_vec3;
 	t_vec3	z_vec3;
-	
+
 	x_vec3 = vec3_mul_const_copy(e->cam->vec_right, x_move);
 	y_vec3 = vec3_mul_const_copy(e->cam->vec_down, -y_move);
 	z_vec3 = vec3_mul_const_copy(e->cam->vec_focal, z_move);
@@ -56,8 +68,9 @@ void	move_rotation(t_engine *e, float side_rot, float front_rot)
 	t_vec3		side_tilt;
 	t_vec3		front_tilt;
 	t_vec3		new_dir;
-	
-	new_focal_point = vec3_add_2inst_copy(e->cam->camera_center, e->cam->vec_focal);
+
+	new_focal_point = vec3_add_2inst_copy(e->cam->camera_center,
+			e->cam->vec_focal);
 	side_tilt = vec3_mul_const_copy(e->cam->vec_right, side_rot);
 	front_tilt = vec3_mul_const_copy(e->cam->vec_down, -front_rot);
 	vec3_add_2inst(&new_focal_point, &side_tilt);
@@ -70,9 +83,9 @@ void	move_rotation(t_engine *e, float side_rot, float front_rot)
 	mlx_put_image_to_window(e->mlx, e->window, e->img.img, 0, 0);
 }
 
-int handle_key(int keycode, void *param)
+int	handle_key(int keycode, void *param)
 {
-    printf("keycode: %d\n", keycode);
-    (void)param;
-    return (0);
+	printf("keycode: %d\n", keycode);
+	(void)param;
+	return (0);
 }

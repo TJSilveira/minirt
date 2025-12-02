@@ -1,11 +1,16 @@
-#include "../includes/minirt.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tsilveir <tsilveir@student.42luxembourg.l  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/02 14:52:36 by tsilveir          #+#    #+#             */
+/*   Updated: 2025/12/02 14:52:37 by tsilveir         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void	print_scene_elements(t_engine *e)
-{
-	print_scene_ambient(e);
-	print_scene_lights(e);
-	print_scene_objects(e);
-}
+#include "../includes/minirt.h"
 
 void	print_scene_ambient(t_engine *e)
 {
@@ -14,7 +19,7 @@ void	print_scene_ambient(t_engine *e)
 		printf("[Ambient Color]\n");
 		printf("Ambient Color:");
 		print_vec3(&e->scene.amb->color);
-		printf("Ambient Intensity: %f\n",e->scene.amb->intensity);
+		printf("Ambient Intensity: %f\n", e->scene.amb->intensity);
 	}
 	else
 		printf("No Ambient light loaded\n");

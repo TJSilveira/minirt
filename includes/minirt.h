@@ -13,8 +13,8 @@
 #ifndef MINIRT_H
 # define MINIRT_H
 # include "../libft/libft.h"
-# include <math.h>
 # include "../minilibx-linux/mlx.h"
+# include <math.h>
 # define X 0
 # define Y 1
 # define Z 2
@@ -23,10 +23,10 @@
 # define B 2
 # define MAX_OBJECTS 100
 # ifdef VALGRIND
-# define IMAGE_WIDTH 400
+#  define IMAGE_WIDTH 400
 # endif
 # ifndef VALGRIND
-# define IMAGE_WIDTH 400
+#  define IMAGE_WIDTH 400
 # endif
 # define MAX_INT_COLOR 255
 # define TMAX 5000
@@ -42,7 +42,7 @@
 # define NUM_PARAM_AMBIENT 2
 # define NUM_PARAM_CAMERA 3
 
-# define SPECULAR_PARAM 16.0
+# define SPECULAR_PARAM 32.0
 
 # define KEY_U 117
 # define KEY_I 105
@@ -64,284 +64,303 @@
 # define LEFTARROW 65361
 # define RIGHTARROW 65363
 
-#include <stdio.h>
+# include <stdio.h>
 
-typedef enum e_bool {FALSE, TRUE}	t_bool;
-
-typedef union u_object t_object_union;
-typedef struct s_object t_object;
-
-typedef struct s_vec3 
+typedef enum e_bool
 {
-	float e[3];
-} t_vec3, t_color3, t_point3;
+	FALSE,
+	TRUE
+}						t_bool;
+
+typedef union u_object	t_object_union;
+typedef struct s_object	t_object;
+
+typedef struct s_vec3
+{
+	float				e[3];
+} t_vec3, t_color3,	t_point3;
 
 typedef struct s_hit
 {
-	t_point3	p;
-	t_vec3		normal;
-	float		t;
-	t_bool		inside_face;
-	t_object	*hit_obj;
-	t_color3	color;
-}t_hit;
+	t_point3			p;
+	t_vec3				normal;
+	float				t;
+	t_bool				inside_face;
+	t_object			*hit_obj;
+	t_color3			color;
+}						t_hit;
 
 typedef struct s_interval
 {
-	float	min;
-	float	max;
-} t_interval;
-
+	float				min;
+	float				max;
+}						t_interval;
 
 typedef struct s_ray
 {
-	t_vec3 		dir;
-	t_point3 	orig;
-	t_interval	itv;
-} t_ray;
+	t_vec3				dir;
+	t_point3			orig;
+	t_interval			itv;
+}						t_ray;
 
 typedef struct s_sphere
 {
-	t_point3	center;
-	t_color3	color;
-	float 	ray;
-}t_sphere;
+	t_point3			center;
+	t_color3			color;
+	float				ray;
+}						t_sphere;
 
 typedef struct s_plane
 {
-	t_point3	point;
-	t_vec3		normal;
-	t_color3	color;
-}t_plane;
+	t_point3			point;
+	t_vec3				normal;
+	t_color3			color;
+}						t_plane;
 
 typedef struct s_cylinder
 {
-	t_point3	center;
-	t_vec3		normal;
-	float		diam;
-	float		h;
-	t_color3	color;
-} t_cylinder;
+	t_point3			center;
+	t_vec3				normal;
+	float				diam;
+	float				h;
+	t_color3			color;
+}						t_cylinder;
 
 typedef struct s_light
 {
-	t_point3	center;
-	float		brightness;
-	t_color3	color;
-} t_light;
+	t_point3			center;
+	float				brightness;
+	t_color3			color;
+}						t_light;
 
 typedef struct s_image
 {
-	void			*img;
-	char			*addr;
-	int				pix_bits;
-	int				line_len;
-	int				endian;
-	int				iter;
-}	t_image;
+	void				*img;
+	char				*addr;
+	int					pix_bits;
+	int					line_len;
+	int					endian;
+	int					iter;
+}						t_image;
 
 typedef struct s_camera
 {
-	float		focal_length;
-    float		vp_height;
-    float		vp_width;
-	float		fov;
-	t_vec3		vec_right;
-    t_vec3		vec_down;
-    t_vec3		vec_focal;
-	t_vec3		pixel_delta_right;
-	t_vec3		pixel_delta_down;
-	t_point3	camera_center;
-	t_vec3		direction;
-	t_point3	vp_upper_left;
-	t_point3	pixel00_loc_center;
-}t_camera;
+	float				focal_length;
+	float				vp_height;
+	float				vp_width;
+	float				fov;
+	t_vec3				vec_right;
+	t_vec3				vec_down;
+	t_vec3				vec_focal;
+	t_vec3				pixel_delta_right;
+	t_vec3				pixel_delta_down;
+	t_point3			camera_center;
+	t_vec3				direction;
+	t_point3			vp_upper_left;
+	t_point3			pixel00_loc_center;
+}						t_camera;
 
 typedef enum e_object_id
 {
 	id_sphere,
 	id_plane,
 	id_cylinder
-} t_object_id;
+}						t_object_id;
 
 typedef union u_object
 {
-	t_sphere	sphere;
-	t_plane		plane;
-	t_cylinder	cylinder;
-} t_object_union;
+	t_sphere			sphere;
+	t_plane				plane;
+	t_cylinder			cylinder;
+}						t_object_union;
 
 typedef struct s_object
 {
-	t_object_id		id;
-	t_object_union	obj_union;
-} t_object;
+	t_object_id			id;
+	t_object_union		obj_union;
+}						t_object;
 
-typedef	struct s_ambient
+typedef struct s_ambient
 {
-	int			has_ambient;
-	float		intensity;
-	t_color3	color;
-}t_ambient;
+	int					has_ambient;
+	float				intensity;
+	t_color3			color;
+}						t_ambient;
 
 typedef struct s_scene
 {
-	t_object	**objects;
-	t_light		**lights;
-	size_t		obj_count;
-	size_t		obj_capacity;
-	size_t		l_count;
-	size_t		l_capacity;
-	t_ambient	*amb;
-} t_scene;
+	t_object			**objects;
+	t_light				**lights;
+	size_t				obj_count;
+	size_t				obj_capacity;
+	size_t				l_count;
+	size_t				l_capacity;
+	t_ambient			*amb;
+}						t_scene;
 
 typedef struct s_engine
 {
-	void			*mlx;
-	void			*window;
-	unsigned int	win_w;
-	unsigned int	win_h;
-	float			aspect_ratio;
-	t_image			img;
-	t_camera		*cam;
-	t_scene			scene;
-}	t_engine;
+	void				*mlx;
+	void				*window;
+	unsigned int		win_w;
+	unsigned int		win_h;
+	float				aspect_ratio;
+	t_image				img;
+	t_camera			*cam;
+	t_scene				scene;
+}						t_engine;
 
 typedef struct s_pixel
 {
-	int	x;
-	int	y;
-	t_point3		center;
-	t_point3		top_left;
-	t_point3		start_sample;
-	t_color3		clr;
-}	t_pixel;
+	int					x;
+	int					y;
+	t_point3			center;
+	t_point3			top_left;
+	t_point3			start_sample;
+	t_color3			clr;
+}						t_pixel;
 
 typedef struct s_quadartic
 {
-	float	a;
-	float	h;
-	float	c;
-	float	discriminate;
-	t_bool	has_solutions;
-	float	t_minus;
-	float	t_plus;
-} t_quadratic;
+	float				a;
+	float				h;
+	float				c;
+	float				discriminate;
+	t_bool				has_solutions;
+	float				t_minus;
+	float				t_plus;
+}						t_quadratic;
 
 // vec3_utils.c function prototypes
-void			print_vec3(t_vec3 *v);
-t_vec3			init_vec3(float x, float y, float z);
-t_vec3			unit_vec3(t_vec3 *v);
-float			vec3_dot(t_vec3 *v1, t_vec3 *v2);
-void			error_handler(char *msg, t_engine *e);
+void					print_vec3(t_vec3 *v);
+t_vec3					init_vec3(float x, float y, float z);
+t_vec3					unit_vec3(t_vec3 *v);
+float					vec3_dot(t_vec3 *v1, t_vec3 *v2);
+void					error_handler(char *msg, t_engine *e);
 
-float			vec3_length_squared(t_vec3 *v);
-float			vec3_length(t_vec3 *v);
+float					vec3_length_squared(t_vec3 *v);
+float					vec3_length(t_vec3 *v);
 
-t_vec3			vec3_mul_const_copy(t_vec3 v, float t);
-void			vec3_mul_const(t_vec3 *v, float t);
-t_vec3			vec3_mul_2inst_copy(t_vec3 v1, t_vec3 v2);
-void			vec3_mul_2inst(t_vec3 *v1, t_vec3 *v2);
+t_vec3					vec3_mul_const_copy(t_vec3 v, float t);
+void					vec3_mul_const(t_vec3 *v, float t);
+t_vec3					vec3_mul_2inst_copy(t_vec3 v1, t_vec3 v2);
+void					vec3_mul_2inst(t_vec3 *v1, t_vec3 *v2);
 
-t_vec3			vec3_div_const_copy(t_vec3 v, float t);
-void			vec3_div_const(t_vec3 *v, float t);
+t_vec3					vec3_div_const_copy(t_vec3 v, float t);
+void					vec3_div_const(t_vec3 *v, float t);
 
-t_vec3			vec3_add_2inst_copy(t_vec3 v1, t_vec3 v2);
-void			vec3_add_2inst(t_vec3 *v1, t_vec3 *v2);
-t_vec3			vec3_add_cont_copy(t_vec3 v1, float t);
-void			vec3_add_cont(t_vec3 *v1, float t);
+t_vec3					vec3_add_2inst_copy(t_vec3 v1, t_vec3 v2);
+void					vec3_add_2inst(t_vec3 *v1, t_vec3 *v2);
+t_vec3					vec3_add_cont_copy(t_vec3 v1, float t);
+void					vec3_add_cont(t_vec3 *v1, float t);
 
-t_vec3			vec3_sub_2inst_copy(t_vec3 v1, t_vec3 v2);
-void			vec3_sub_2inst(t_vec3 *v1, t_vec3 *v2);
+t_vec3					vec3_sub_2inst_copy(t_vec3 v1, t_vec3 v2);
+void					vec3_sub_2inst(t_vec3 *v1, t_vec3 *v2);
 
-float			vec3_get_x(t_vec3 *v);
-float			vec3_get_y(t_vec3 *v);
-float			vec3_get_z(t_vec3 *v);
-
-// t_camera.c
-void			init_camera_upper_left(t_camera *c);
-void			init_pixel00_center(t_engine *e);
-void			update_camera_location(t_engine *e);
-t_point3		calculate_pixel_center(t_camera *c, int row, int col);
-t_point3		calculate_pixel_top_left(t_camera *c, int row, int col);
+// camera.c
+void					init_camera_upper_left(t_camera *c);
+void					init_pixel00_center(t_engine *e);
+void					init_camera_orthogonal_vectors(t_engine *e, t_vec3 *up);
+void					resize_camera_orthogonal_vectors(t_engine *e,
+							t_vec3 *up);
+void					update_camera_location(t_engine *e);
+void					calculate_viewport_size(t_engine *e);
+t_point3				calculate_pixel_center(t_camera *c, int row, int col);
+t_point3				calculate_pixel_top_left(t_camera *c, int row, int col);
 
 // ray.c
-t_color3		ray_tracer(t_ray *r, t_engine *e);
-t_point3		point_at_ray(t_ray *r, float t);
-t_bool			hit_sphere(t_sphere *s, t_ray *r, t_hit *rec);
-t_bool			hit_object(t_engine *e, t_ray *r, t_hit *hit);
-t_bool			hit_occluded(t_engine *e, t_ray *r);
-unsigned int	t_color3_to_uint(t_color3 c);
-void			record_hit (t_ray *r, t_hit *rec, t_vec3 *normal, float t);
-t_bool			hit_object_function_selecter(t_object *obj, t_ray *r, t_hit *hit);
+t_color3				ray_tracer(t_ray *r, t_engine *e);
+t_point3				point_at_ray(t_ray *r, float t);
+t_bool					hit_sphere(t_sphere *s, t_ray *r, t_hit *rec);
+t_bool					hit_object(t_engine *e, t_ray *r, t_hit *hit);
+t_bool					hit_occluded(t_engine *e, t_ray *r);
+unsigned int			t_color3_to_uint(t_color3 c);
+void					record_hit(t_ray *r, t_hit *rec, t_vec3 *normal,
+							float t);
+t_bool					hit_object_function_selecter(t_object *obj, t_ray *r,
+							t_hit *hit);
 
-t_color3		ray_color(t_ray *r, t_engine *e, t_hit *hit);
-t_color3		ray_color_ambient_light(t_engine *e, t_hit *hit);
-t_color3		ray_color_diffuse_light(t_light *l, t_hit *hit);
-t_color3		ray_color_specular_light(t_light *l, t_hit *hit, t_ray *r);
-void			vec3_max_normalization(t_vec3 *v);
-
+t_color3				ray_color(t_ray *r, t_engine *e, t_hit *hit);
+t_color3				ray_color_ambient_light(t_engine *e, t_hit *hit);
+t_color3				ray_color_diffuse_light(t_light *l, t_hit *hit);
+t_color3				ray_color_specular_light(t_light *l, t_hit *hit,
+							t_ray *r);
+void					vec3_max_normalization(t_vec3 *v);
 
 // mlx_utils.c
-void			my_mlx_pixel_put(t_image *data, int x, int y, int color);
-void			render(t_engine *e);
-void			init_img(t_engine *e);
-void			init_engine(char *argv[], t_engine *e);
-void			get_pixel_color_anti_alaising_rt(t_engine *e, t_pixel *p);
-t_point3		get_sample_location(t_engine *e, t_pixel *p, int i, int j);
-void 			init_ray(t_ray *ray, t_engine *e, t_point3 *dir_point);
-void			print_scene_elements(t_engine *e);
-void			print_scene_ambient(t_engine *e);
-void			print_scene_lights(t_engine *e);
-void			print_scene_objects(t_engine *e);
-void			print_scene_sphere(t_object *obj);
-void			print_scene_plane(t_object *obj);
-t_vec3			vec3_cross(t_vec3 *v1, t_vec3 *v2);
-void			cleanup_engine(t_engine *e);
-void			cleanup_scene(t_engine *e);
-void			cleanup_image(t_engine *e);
-void			show_help();
+void					my_mlx_pixel_put(t_image *data, int x, int y,
+							int color);
+void					render(t_engine *e);
+void					init_img(t_engine *e);
+void					init_engine(char *argv[], t_engine *e);
+void					get_pixel_color_anti_alaising_rt(t_engine *e,
+							t_pixel *p);
+t_point3				get_sample_location(t_engine *e, t_pixel *p, int i,
+							int j);
+void					init_ray(t_ray *ray, t_engine *e, t_point3 *dir_point);
+void					print_scene_elements(t_engine *e);
+void					print_scene_ambient(t_engine *e);
+void					print_scene_lights(t_engine *e);
+void					print_scene_objects(t_engine *e);
+void					print_scene_sphere(t_object *obj);
+void					print_scene_plane(t_object *obj);
+t_vec3					vec3_cross(t_vec3 *v1, t_vec3 *v2);
+void					cleanup_engine(t_engine *e);
+void					cleanup_scene(t_engine *e);
+void					cleanup_image(t_engine *e);
+void					show_help(void);
 
 // math_utils.c
-void			solve_quadratic(t_quadratic *q);
-float			degrees_to_radians(float degrees);
+t_quadratic				solve_quadratic(t_sphere *s, t_ray *r);
+float					degrees_to_radians(float degrees);
 
 // scene.c
-void			import_rt_file_definitions(char *argv[], t_engine *e);
-void			add_object_to_scene(t_scene *s, t_object *o);
-void			add_light_to_scene(t_scene *s, t_light *light);
+void					import_rt_file_definitions(char *argv[], t_engine *e);
+void					add_object_to_scene(t_engine *e, t_object *o);
+void					add_light_to_scene(t_engine *e, t_light *light);
 
 // import.c
-char			**rt_file_parser(char* buffer);
-int				rt_import_sphere(char **params, t_engine *e);
-int				rt_import_plane(char **params, t_engine *e);
-int				rt_import_light(char **params, t_engine *e);
-int				rt_import_ambient(char **params, t_engine *e);
-int				rt_import_camera(char **params, t_engine *e);
-int				rt_import_color(char *param, t_vec3 *vec);
-int				rt_import_float(char *param, float *result);
-int				rt_import_vec3 (char *param, t_vec3 *vec);
-int				rt_importer_params(char **params, t_engine *e);
-void			rt_extension_check(char *argv[]);
-int				rt_import_fov(char *param, float *result);
-int				rt_import_vec3_normalized (char *param, t_vec3 *vec);
+char					**rt_file_parser(char *buffer);
+int						rt_import_sphere(char **params, t_engine *e);
+int						rt_import_plane(char **params, t_engine *e);
+int						rt_import_light(char **params, t_engine *e);
+int						rt_import_ambient(char **params, t_engine *e);
+int						rt_import_camera(char **params, t_engine *e);
+int						rt_import_color(char *param, t_vec3 *vec);
+int						rt_import_float(char *param, float *result);
+int						rt_import_vec3(char *param, t_vec3 *vec);
+int						rt_importer_params(char **params, t_engine *e);
+void					rt_extension_check(char *argv[]);
+int						rt_import_fov(char *param, float *result);
+int						rt_import_vec3_normalized(char *param, t_vec3 *vec);
 
 // utils.c
-void			free_arrays(char **arrays);
-int				return_and_free_array(int exit_value, char **arrays);
-void			ft_str_to_float(char *str, float *result);
-t_bool			is_digit(char c);
-t_bool			is_float(char *num);
-t_bool			is_int_color(char *num);
+void					free_arrays(char **arrays);
+int						return_and_free_array(int exit_value, char **arrays);
+void					ft_str_to_float(char *str, float *result);
+t_bool					is_digit(char c);
+t_bool					is_float(char *num);
+t_bool					is_int_color(char *num);
 
 // light.c
-t_bool			in_shadow(t_engine *e, t_light *l, t_hit *hit);
+t_bool					in_shadow(t_engine *e, t_light *l, t_hit *hit);
 
 // events.c
-int				close_win(t_engine *engine);
-int				key_fig(int key, t_engine *e);
-int				handle_key(int keycode, void *param);
-void			move_translation(t_engine *e, float x_move, float y_move, float z_move);
-void	move_rotation(t_engine *e, float side_rot, float front_rot);
+int						close_win(t_engine *engine);
+int						key_fig(int key, t_engine *e);
+int						handle_key(int keycode, void *param);
+void					move_translation(t_engine *e, float x_move,
+							float y_move, float z_move);
+void					move_rotation(t_engine *e, float side_rot,
+							float front_rot);
+
+// colors.c
+float					linear_to_gamma(float num);
+
+// hit_1.c
+t_bool					hit_plane(t_plane *p, t_ray *r, t_hit *hit);
+
+// hit_2.c
+void					set_face_normal(t_ray *r, t_hit *hit);
 
 #endif

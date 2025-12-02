@@ -1,31 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   vec3_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tsilveir <tsilveir@student.42luxembourg.l  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/02 14:51:05 by tsilveir          #+#    #+#             */
-/*   Updated: 2025/12/02 14:51:11 by tsilveir         ###   ########.fr       */
+/*   Created: 2025/12/02 14:53:04 by tsilveir          #+#    #+#             */
+/*   Updated: 2025/12/02 14:53:05 by tsilveir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minirt.h"
 
-int	main(int argc, char *argv[])
+float	vec3_length_squared(t_vec3 *v)
 {
-	t_engine	eng;
+	return (v->e[0] * v->e[0] + v->e[1] * v->e[1] + v->e[2] * v->e[2]);
+}
 
-	(void)(argv);
-	if (argc != 2)
-		show_help();
-	rt_extension_check(argv);
-	ft_memset(&eng, 0, sizeof(t_engine));
-	init_engine(argv, &eng);
-	mlx_put_image_to_window(eng.mlx, eng.window, eng.img.img, 0, 0);
-	mlx_key_hook(eng.window, key_fig, &eng);
-	mlx_hook(eng.window, 17, 0L, close_win, &eng);
-	mlx_loop(eng.mlx);
-	cleanup_engine(&eng);
-	return (0);
+float	vec3_length(t_vec3 *v)
+{
+	return (sqrt(vec3_length_squared(v)));
 }
