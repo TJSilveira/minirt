@@ -26,11 +26,11 @@
 # define IMAGE_WIDTH 400
 # endif
 # ifndef VALGRIND
-# define IMAGE_WIDTH 1200
+# define IMAGE_WIDTH 400
 # endif
 # define MAX_INT_COLOR 255
 # define TMAX 5000
-# define RAY_SAMPLE_SIDE_SIZE 3.0
+# define RAY_SAMPLE_SIDE_SIZE 2.0
 # define RAY_SAMPLE_PADDING 0.1
 # define EPSILON 0.000001
 
@@ -44,6 +44,20 @@
 
 # define SPECULAR_PARAM 16.0
 
+# define KEY_U 117
+# define KEY_I 105
+# define KEY_J 106
+# define KEY_K 107
+# define KEY_L 108
+# define KEY_M 109
+
+# define KEY_W 119
+# define KEY_A 97
+# define KEY_S 115
+# define KEY_D 100
+# define KEY_R 114
+# define KEY_F 102
+# define KEY_COMMA 44
 # define KEY_ESC 65307
 # define UPARROW 65362
 # define DOWNARROW 65364
@@ -326,5 +340,8 @@ t_bool			in_shadow(t_engine *e, t_light *l, t_hit *hit);
 // events.c
 int				close_win(t_engine *engine);
 int				key_fig(int key, t_engine *e);
+int				handle_key(int keycode, void *param);
+void			move_translation(t_engine *e, float x_move, float y_move, float z_move);
+void	move_rotation(t_engine *e, float side_rot, float front_rot);
 
 #endif

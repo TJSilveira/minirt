@@ -10,23 +10,75 @@ int	key_fig(int key, t_engine *e)
 {
 	if (key == KEY_ESC)
 		close_win(e);
-	// else if (key == '0')
-	// 	zoom_reset(e);
-	// else if (key == LEFTARROW)
-	// 	arrow_move(e, 0.0, -1.0);
-	// else if (key == RIGHTARROW)
-	// 	arrow_move(e, 0.0, 1.0);
-	// else if (key == UPARROW)
-	// 	arrow_move(e, 1.0, 0.0);
-	// else if (key == DOWNARROW)
-	// 	arrow_move(e, -1.0, 0.0);
-	// else if (key == 'q')
-	// 	update_color_scheme(e, 0x0000FF00, 0x00FF0000);
-	// else if (key == 'w')
-	// 	update_color_scheme(e, 0x0000FF00, 0x000000FF);
-	// else if (key == 'e')
-	// 	update_color_scheme(e, 0x00FF0000, 0x0000FF00);
-	// else if (key == 'r')
-	// 	update_color_scheme(e, 0x000000FF, 0x00FF0000);
+	else if (key == KEY_W)
+		move_translation(e, 0.0, 0.3, 0.0);
+	else if (key == KEY_S)
+		move_translation(e, 0.0, -0.3, 0.0);
+	else if (key == KEY_A)
+		move_translation(e, -0.3, 0.0, 0.0);
+	else if (key == KEY_D)
+		move_translation(e, 0.3, 0.0, 0.0);
+	else if (key == KEY_R)
+		move_translation(e, 0.0, 0.0, 1.0);
+	else if (key == KEY_F)
+		move_translation(e, 0.0, 0.0, -1.0);
+	else if (key == KEY_I)
+		move_rotation(e, 0.0, 0.2);
+	else if (key == KEY_J)
+		move_rotation(e, -0.2, 0.0);
+	else if (key == KEY_K)
+		move_rotation(e, 0.0, -0.2);
+	else if (key == KEY_L)
+		move_rotation(e, 0.2, 0.0);
 	return (0);
+}
+
+void	move_translation(t_engine *e, float x_move, float y_move, float z_move)
+{
+	t_vec3	x_vec3;
+	t_vec3	y_vec3;
+	t_vec3	z_vec3;
+	
+	x_vec3 = vec3_mul_const_copy(e->cam->vec_right, x_move);
+	y_vec3 = vec3_mul_const_copy(e->cam->vec_down, -y_move);
+	z_vec3 = vec3_mul_const_copy(e->cam->vec_focal, z_move);
+	vec3_add_2inst(&e->cam->camera_center, &x_vec3);
+	vec3_add_2inst(&e->cam->camera_center, &y_vec3);
+	vec3_add_2inst(&e->cam->camera_center, &z_vec3);
+	update_camera_location(e);
+	render(e);
+	mlx_put_image_to_window(e->mlx, e->window, e->img.img, 0, 0);
+}
+
+void	move_rotation(t_engine *e, float side_rot, float front_rot)
+{
+	t_point3	new_focal_point;
+	t_vec3		side_tilt;
+	t_vec3		front_tilt;
+	t_vec3		new_dir;
+	
+	new_focal_point = vec3_add_2inst_copy(e->cam->camera_center, e->cam->vec_focal);
+	side_tilt = vec3_mul_const_copy(e->cam->vec_right, side_rot);
+	front_tilt = vec3_mul_const_copy(e->cam->vec_down, -front_rot);
+
+	printf("This is front tilt\n");
+	print_vec3(&front_tilt);
+	printf("This is Camera Center\n");
+	print_vec3(&new_focal_point);
+	vec3_add_2inst(&new_focal_point, &side_tilt);
+	vec3_add_2inst(&new_focal_point, &front_tilt);
+
+	new_dir = vec3_sub_2inst_copy(new_focal_point, e->cam->camera_center);
+	new_dir = unit_vec3(&new_dir);
+	e->cam->direction = new_dir;
+	update_camera_location(e);
+	render(e);
+	mlx_put_image_to_window(e->mlx, e->window, e->img.img, 0, 0);
+}
+
+int handle_key(int keycode, void *param)
+{
+    printf("keycode: %d\n", keycode);
+    (void)param;
+    return (0);
 }

@@ -8,7 +8,7 @@ void init_camera_upper_left(t_camera *c)
 	t_point3 vec_right_half;
 	t_point3 vec_down_half;
 
-	vp_upper_left = vec3_sub_2inst_copy(c->camera_center, c->vec_focal);
+	vp_upper_left = vec3_add_2inst_copy(c->camera_center, c->vec_focal);
 	vec_right_half = vec3_div_const_copy(c->vec_right, 2);
 	vec_down_half = vec3_div_const_copy(c->vec_down, 2);
 	vp_upper_left = vec3_sub_2inst_copy(vp_upper_left, vec_right_half);
@@ -58,7 +58,7 @@ void	resize_camera_orthogonal_vectors(t_engine *e, t_vec3 *up)
 {
 	e->cam->vec_right = vec3_mul_const_copy(e->cam->vec_right, e->cam->vp_width);
 	e->cam->vec_down = vec3_mul_const_copy(*up, -e->cam->vp_height);
-	e->cam->vec_focal = vec3_mul_const_copy(e->cam->direction, -e->cam->focal_length);
+	e->cam->vec_focal = vec3_mul_const_copy(e->cam->direction, e->cam->focal_length);
 }
 
 void	update_camera_location(t_engine *e)
