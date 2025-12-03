@@ -49,8 +49,7 @@ void	rt_extension_check(char *argv[])
 	ext = ft_strrchr(argv[1], '.');
 	if (!ext || ft_strncmp(ext, ".rt", 3) != 0)
 	{
-		ft_putstr_fd("The file used does not comply with the extension \
-			requirements. You need to provide a .rt file\n",
+		ft_putstr_fd("The file used is not a .rt file\n",
 			STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}

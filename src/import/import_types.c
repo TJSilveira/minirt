@@ -35,11 +35,23 @@ int	rt_import_color(char *param, t_vec3 *vec)
 	return (return_and_free_array(EXIT_SUCCESS, nums));
 }
 
-int	rt_import_float(char *param, float *result)
+int	rt_import_float_non_negative(char *param, float *result)
 {
 	if (is_float(param) == FALSE)
 		return (EXIT_FAILURE);
 	ft_str_to_float(param, result);
+	if (*result <= 0)
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
+}
+
+int	rt_import_float_between_01(char *param, float *result)
+{
+	if (is_float(param) == FALSE)
+		return (EXIT_FAILURE);
+	ft_str_to_float(param, result);
+	if (*result < 0 || *result > 1)
+		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }
 

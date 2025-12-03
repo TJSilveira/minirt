@@ -26,7 +26,7 @@ int	rt_import_sphere(char **params, t_engine *e)
 	if (i != NUM_PARAM_SPHERE)
 		return (EXIT_FAILURE);
 	if (rt_import_vec3(params[0], &sp->obj_union.sphere.center) == EXIT_FAILURE
-		|| rt_import_float(params[1], &sp->obj_union.sphere.ray) == EXIT_FAILURE
+		|| rt_import_float_non_negative(params[1], &sp->obj_union.sphere.ray) == EXIT_FAILURE
 		|| rt_import_color(params[2],
 			&sp->obj_union.sphere.color) == EXIT_FAILURE)
 	{
@@ -52,7 +52,7 @@ int	rt_import_plane(char **params, t_engine *e)
 	if (i != NUM_PARAM_PLANE)
 		return (EXIT_FAILURE);
 	if (rt_import_vec3(params[0], &pl->obj_union.plane.point) == EXIT_FAILURE
-		|| rt_import_vec3(params[1],
+		|| rt_import_vec3_normalized(params[1],
 			&pl->obj_union.plane.normal) == EXIT_FAILURE
 		|| rt_import_color(params[2],
 			&pl->obj_union.plane.color) == EXIT_FAILURE)
@@ -80,7 +80,7 @@ int	rt_import_light(char **params, t_engine *e)
 	if (i != NUM_PARAM_LIGHT)
 		return (EXIT_FAILURE);
 	if (rt_import_vec3(params[0], &l->center) == EXIT_FAILURE
-		|| rt_import_float(params[1], &l->brightness) == EXIT_FAILURE
+		|| rt_import_float_between_01(params[1], &l->brightness) == EXIT_FAILURE
 		|| rt_import_color(params[2], &l->color) == EXIT_FAILURE)
 	{
 		free(l);
@@ -104,7 +104,7 @@ int	rt_import_ambient(char **params, t_engine *e)
 		;
 	if (i != NUM_PARAM_AMBIENT)
 		return (EXIT_FAILURE);
-	if (rt_import_float(params[0], &e->scene.amb->intensity) == EXIT_FAILURE
+	if (rt_import_float_between_01(params[0], &e->scene.amb->intensity) == EXIT_FAILURE
 		|| rt_import_color(params[1], &e->scene.amb->color) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	e->scene.amb->has_ambient = 1;

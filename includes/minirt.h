@@ -26,7 +26,7 @@
 #  define IMAGE_WIDTH 400
 # endif
 # ifndef VALGRIND
-#  define IMAGE_WIDTH 400
+#  define IMAGE_WIDTH 1200
 # endif
 # define MAX_INT_COLOR 255
 # define TMAX 5000
@@ -327,7 +327,8 @@ int						rt_import_light(char **params, t_engine *e);
 int						rt_import_ambient(char **params, t_engine *e);
 int						rt_import_camera(char **params, t_engine *e);
 int						rt_import_color(char *param, t_vec3 *vec);
-int						rt_import_float(char *param, float *result);
+int						rt_import_float_non_negative(char *param, float *result);
+int						rt_import_float_between_01(char *param, float *result);
 int						rt_import_vec3(char *param, t_vec3 *vec);
 int						rt_importer_params(char **params, t_engine *e);
 void					rt_extension_check(char *argv[]);
